@@ -1,17 +1,19 @@
-From schmunk42/docker-toolbox
+FROM schmunk42/docker-toolbox:latest
 
 MAINTAINER zhangjie0220@gmail.com
 
 WORKDIR /linker
 
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
 # copy binarys and make them executable
-ADD bin/* /tmp/linker/
+COPY bin/* /tmp/linker/
 RUN chmod +x /tmp/linker/* &&\
     mv /tmp/linker/docker* /opt/local/bin/ &&\
     mv /tmp/linker/entrypoint.sh /entrypoint.sh 
 
 # copy linker components and make binary and shell file executable
-ADD linker /tmp/linker
+COPY linker /tmp/linker
 RUN chmod +x /tmp/linker/bin/* &&\
     mv /tmp/linker/bin/* /linker/ &&\
     mv /tmp/linker/config /linker/ &&\
@@ -24,9 +26,4 @@ EXPOSE 10003
 #Expose the config and log folder
 VOLUME ["/linker/docker","/linker/swarm","/var/log"]
 
-#ENTRYPOINT ["/linker/dcos_deploy"]
-
-#CMD ["-config=/linker/config/dcos_deploy.properties", "2>&1"]
-
-ENTRYPOINT ["/bin/bash"]
 CMD ["/entrypoint.sh"]
